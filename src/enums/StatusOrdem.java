@@ -1,4 +1,8 @@
 package enums;
 
-public class StatusOrdem {
+public enum StatusOrdem {
+    CRIADA,
+    ENVIADA,
+    EXECUTADA,
+    CANCELADA;
 }

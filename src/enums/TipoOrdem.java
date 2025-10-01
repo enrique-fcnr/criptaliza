@@ -1,4 +1,7 @@
 package enums;
 
-public class TipoOrdem {
+public enum TipoOrdem {
+    MARKET,
+    LIMIT,
+    STOP;
 }
