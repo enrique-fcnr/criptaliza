@@ -11,7 +11,7 @@ public class Investidor{
     private String resumoObjetivo;
 
     //Constructors//
-    public Investidor(UUID id, String persona, Integer pontuacaoRisco, String resumoObjetivo) {
+    public Investidor(String persona, Integer pontuacaoRisco, String resumoObjetivo) {
         this.id = UUID.randomUUID();
         this.persona = persona;
         this.pontuacaoRisco = pontuacaoRisco;

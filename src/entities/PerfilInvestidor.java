@@ -11,7 +11,6 @@ public class PerfilInvestidor {
     private String prevencoes;
 
     //Constructors//
-    public PerfilInvestidor(){}
     public PerfilInvestidor(String objetivo, String toleranciaRisco, String horizonte, String experiencia, String preferencias, String prevencoes) {
         this.objetivo = objetivo;
         this.toleranciaRisco = toleranciaRisco;
