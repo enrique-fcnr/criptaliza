@@ -1,5 +1,7 @@
 package entities;
 
+import integrations.ExchangeIntegration;
+
 public class API_Corretora {
 
     //Attributes//
