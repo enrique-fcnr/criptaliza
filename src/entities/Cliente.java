@@ -12,7 +12,7 @@ public class Cliente {
     private String telefone;
     private String idioma;
 
-    private List<Investidor> investidores; //associação à classe de investidores
+    private final List<Investidor> investidores; //associação à classe de investidores
 
     //Constructors//
     public Cliente(String nome, String email, String telefone, String idioma) {

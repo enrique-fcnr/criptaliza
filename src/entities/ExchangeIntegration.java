@@ -3,11 +3,10 @@ package entities;
 public class ExchangeIntegration {
 
     //Attributes//
-    private String nome;
-    private String endPoint;
+    private final String nome;
+    private final String endPoint;
 
     //Constructors//
-    public ExchangeIntegration(){}
     public ExchangeIntegration(String nome, String endPoint) {
         this.nome = nome;
         this.endPoint = endPoint;

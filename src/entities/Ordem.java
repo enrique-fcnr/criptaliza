@@ -6,16 +6,13 @@ import enums.TipoOrdem;
 public class Ordem {
 
     //Attributes//
-    private String ativo;
-    private Float quantidade;
+    private final String ativo;
+    private final Float quantidade;
     private Float preco;
-    private TipoOrdem tipo;
+    private final TipoOrdem tipo;
     private StatusOrdem status;
 
     //Constructors//
-    public Ordem(){
-
-    }
     public Ordem(String ativo, Float quantidade, Float preco, TipoOrdem tipo, StatusOrdem status) {
         this.ativo = ativo;
         this.quantidade = quantidade;
@@ -34,14 +31,8 @@ public class Ordem {
     public Float getPreco() {
         return preco;
     }
-    public void setPreco(Float preco) {
-        this.preco = preco;
-    }
     public TipoOrdem getTipo() {
         return tipo;
-    }
-    public void setTipo(TipoOrdem tipo) {
-        this.tipo = tipo;
     }
     public StatusOrdem getStatus() {
         return status;

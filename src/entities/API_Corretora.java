@@ -3,12 +3,11 @@ package entities;
 public class API_Corretora {
 
     //Attributes//
-    private String nome;
-    private String endPoint;
+    private final String nome;
+    private final String endPoint;
     private Boolean ativo;
 
     //Constructors//
-    public API_Corretora(){}
     public API_Corretora(String nome, String endPoint, Boolean ativo) {
         this.nome = nome;
         this.endPoint = endPoint;

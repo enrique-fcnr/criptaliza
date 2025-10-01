@@ -5,14 +5,12 @@ import java.util.UUID;
 public class Investidor{
 
     //Attributes//
-    private UUID id;
+    private final UUID id;
     private String persona;
     private Integer pontuacaoRisco;
     private String resumoObjetivo;
 
     //Constructors//
-    public Investidor(){
-    }
     public Investidor(UUID id, String persona, Integer pontuacaoRisco, String resumoObjetivo) {
         this.id = UUID.randomUUID();
         this.persona = persona;

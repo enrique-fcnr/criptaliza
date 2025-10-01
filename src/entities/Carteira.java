@@ -4,15 +4,13 @@ import java.util.UUID;
 
 public class Carteira {
     //Attributes//
-    private UUID id;
+    private final UUID id;
     private String nome;
     private String faixaRisco;
     private Float totalInvestido;
     private Float valorAtual;
 
     //Constructors//
-    public Carteira(){
-    }
     public Carteira(UUID id, String nome, String faixaRisco, Float totalInvestido, Float valorAtual) {
         this.id = id;
         this.nome = nome;

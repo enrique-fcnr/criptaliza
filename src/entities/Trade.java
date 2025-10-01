@@ -5,12 +5,11 @@ import java.util.Date;
 public class Trade {
 
     //Attributes//
-    private Float precoExec;
-    private Float quantidade;
-    private Date dataExec;
+    private final Float precoExec;
+    private final Float quantidade;
+    private final Date dataExec;
 
     //Constructors//
-    public Trade(){}
     public Trade(Float precoExec, Float quantidade, Date dataExec) {
         this.precoExec = precoExec;
         this.quantidade = quantidade;

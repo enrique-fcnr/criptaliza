@@ -3,14 +3,12 @@ package entities;
 public class RecomendacaoCarteira {
 
     //Attributes//
-    private String tipo;
-    private String ativo;
-    private Float valorSugerido;
-    private Float percAlvo;
+    private final String tipo;
+    private final String ativo;
+    private final Float valorSugerido;
+    private final Float percAlvo;
 
     //Constructors//
-    public RecomendacaoCarteira(){
-    }
     public RecomendacaoCarteira(String tipo, String ativo, Float valorSugerido, Float percAlvo) {
         this.tipo = tipo;
         this.ativo = ativo;
@@ -22,26 +20,14 @@ public class RecomendacaoCarteira {
     public String getTipo() {
         return tipo;
     }
-    public void setTipo(String tipo) {
-        this.tipo = tipo;
-    }
     public String getAtivo() {
         return ativo;
-    }
-    public void setAtivo(String ativo) {
-        this.ativo = ativo;
     }
     public Float getValorSugerido() {
         return valorSugerido;
     }
-    public void setValorSugerido(Float valorSugerido) {
-        this.valorSugerido = valorSugerido;
-    }
     public Float getPercAlvo() {
         return percAlvo;
-    }
-    public void setPercAlvo(Float percAlvo) {
-        this.percAlvo = percAlvo;
     }
 
     //Methods//
