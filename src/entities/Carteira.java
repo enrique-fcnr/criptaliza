@@ -1,8 +1,6 @@
 package entities;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class Carteira {
     //Attributes//
@@ -15,17 +13,21 @@ public class Carteira {
 
     private final Map<String, Float> ativos; // Coleção para armazenar a posição: Ex: <"BTC", 0.5>, <"ETH", 3.0>
 
+    private final List<Ordem> ordens;
+    private final List<RecomendacaoCarteira> recomendacoes;
+
     //Constructors//
     public Carteira(Investidor investidor, String nome) {
         this.id = UUID.randomUUID();
         this.investidor = investidor;
         this.nome = nome;
 
-        // Inicializa os campos e a coleção
         this.faixaRisco = "N/A";
         this.totalInvestido = 0.0f;
         this.valorAtual = 0.0f;
         this.ativos = new HashMap<>();
+        this.ordens = new ArrayList<>();
+        this.recomendacoes = new ArrayList<>();
     }
 
     //Getters and Setters//
@@ -52,6 +54,12 @@ public class Carteira {
     }
     public Float getValorAtual() {
         return valorAtual;
+    }
+    public List<Ordem> getOrdens() {
+        return ordens;
+    }
+    public List<RecomendacaoCarteira> getRecomendacoes() {
+        return recomendacoes;
     }
 
     // Métodos para gestão dos Ativos

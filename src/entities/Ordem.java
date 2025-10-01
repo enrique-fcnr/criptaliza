@@ -3,6 +3,9 @@ package entities;
 import enums.StatusOrdem;
 import enums.TipoOrdem;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Ordem {
 
     //Attributes//
@@ -11,6 +14,7 @@ public class Ordem {
     private Float preco;
     private final TipoOrdem tipo;
     private StatusOrdem status;
+    private final List<Trade> trades; // Associação 1:* a Trade
 
     //Constructors//
     public Ordem(String ativo, Float quantidade, Float preco, TipoOrdem tipo) {
@@ -18,7 +22,9 @@ public class Ordem {
         this.quantidade = quantidade;
         this.preco = preco;
         this.tipo = tipo;
-        this.status = StatusOrdem.CRIADA; // Define o status inicial internamente
+        this.status = StatusOrdem.CRIADA;
+
+        this.trades = new ArrayList<>(); // Inicializa a coleção
     }
 
     //Getters and Setters//
@@ -42,6 +48,9 @@ public class Ordem {
     }
     public void setStatus(StatusOrdem status) {
         this.status = status;
+    }
+    public List<Trade> getTrades() {
+        return trades;
     }
 
     //Methods//

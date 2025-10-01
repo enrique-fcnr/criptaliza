@@ -1,6 +1,8 @@
 package entities;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class Trade {
 
@@ -9,6 +11,7 @@ public class Trade {
     private final Float precoExec;
     private final Float quantidade;
     private final Date dataExec;
+    private final List<InvestidorTrade> investidoresAssociados;
 
     //Constructors//
     public Trade(Ordem ordem, Float precoExec, Float quantidade, Date dataExec) {
@@ -16,6 +19,8 @@ public class Trade {
         this.precoExec = precoExec;
         this.quantidade = quantidade;
         this.dataExec = dataExec;
+
+        this.investidoresAssociados = new ArrayList<>();
     }
 
     //Getters and Setters//
@@ -30,6 +35,9 @@ public class Trade {
     }
     public Date getDataExec() {
         return dataExec;
+    }
+    public List<InvestidorTrade> getInvestidoresAssociados() {
+        return investidoresAssociados;
     }
 
     //Methods//
