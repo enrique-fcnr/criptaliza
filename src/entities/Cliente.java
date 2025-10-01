@@ -6,7 +6,7 @@ import java.util.UUID;
 
 public class Cliente {
     //Attributes//
-    private UUID id;
+    private final UUID id;
     private String nome;
     private String email;
     private String telefone;
@@ -15,8 +15,7 @@ public class Cliente {
     private List<Investidor> investidores; //associação à classe de investidores
 
     //Constructors//
-    public Cliente(){};
-    public Cliente(UUID id, String nome, String email, String telefone, String idioma) {
+    public Cliente(String nome, String email, String telefone, String idioma) {
         this.id = UUID.randomUUID();
         this.nome = nome;
         this.email = email;
