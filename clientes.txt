@@ -1,0 +1,6 @@
+Cliente: Maria | Email: maria@email.com
+  Carteira: Carteira de Cripto Ativos
+
+Cliente: João | Email: joao@email.com
+  Carteira: Carteira de Renda Fixa
+
