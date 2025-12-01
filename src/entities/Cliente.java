@@ -29,6 +29,7 @@ public class Cliente {
     public UUID getId() {
         return id;
     }
+    public void setNome(String nome) {this.nome = nome;}
     public String getNome() {
         return nome;
     }
