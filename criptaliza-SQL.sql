@@ -29,7 +29,7 @@ CREATE TABLE T_CLIENTE (
 );
 
 -- CHAVES PRIMÁRIAS (PK)
-ALTER TABLE T_CLIENTE 
+ALTER TABLE T_CLIENTE
 ADD CONSTRAINT PK_CLIENTE PRIMARY KEY (cd_cliente);
 
 -- Comentário da Tabela
@@ -53,12 +53,12 @@ CREATE TABLE T_INVESTIDOR (
 
 
 -- Adicionando a Chave Estrangeira que liga Investidor ao Cliente
-ALTER TABLE T_INVESTIDOR 
+ALTER TABLE T_INVESTIDOR
 ADD CONSTRAINT PK_INVESTIDOR PRIMARY KEY (cd_investidor);
 
 -- CHAVES ESTRANGEIRAS (FK)
-ALTER TABLE T_INVESTIDOR 
-ADD CONSTRAINT FK_INVESTIDOR_CLIENTE 
+ALTER TABLE T_INVESTIDOR
+ADD CONSTRAINT FK_INVESTIDOR_CLIENTE
 FOREIGN KEY (cd_cliente) REFERENCES T_CLIENTE (cd_cliente);
 
 -- Comentários T_INVESTIDOR
@@ -80,12 +80,12 @@ CREATE TABLE T_CARTEIRA (
 
 -- Constraints em Separado
 -- Primary Key
-ALTER TABLE T_CARTEIRA 
+ALTER TABLE T_CARTEIRA
 ADD CONSTRAINT PK_CARTEIRA PRIMARY KEY (cd_carteira);
 
 -- Foreign Key ligando com o Investidor
-ALTER TABLE T_CARTEIRA 
-ADD CONSTRAINT FK_CARTEIRA_INVESTIDOR 
+ALTER TABLE T_CARTEIRA
+ADD CONSTRAINT FK_CARTEIRA_INVESTIDOR
 FOREIGN KEY (cd_investidor) REFERENCES T_INVESTIDOR (cd_investidor);
 
 -- Comentários (Dicionário de Dados)
@@ -95,25 +95,27 @@ COMMENT ON COLUMN T_CARTEIRA.cd_investidor IS 'FK referenciando o Investidor don
 COMMENT ON COLUMN T_CARTEIRA.nm_carteira   IS 'Nome personalizado (Ex: Carteira de Longo Prazo, Criptos de Risco).';
 COMMENT ON COLUMN T_CARTEIRA.dt_criacao    IS 'Data de abertura da carteira no sistema.';
 
--- Tabela de :
+-- Tabela de Ordem:
+- Tabela de Ordem Corrigida:
 CREATE TABLE T_ORDEM (
     cd_ordem      NUMBER(10)      NOT NULL,
     cd_carteira   NUMBER(10)      NOT NULL,
-    nm_ativo      VARCHAR2(20)    NOT NULL, -- Conforme seu diagrama (varchar ativo)
-    nr_quantidade NUMBER(18,8)    NOT NULL, -- float no diagrama -> NUMBER no Oracle
-    tp_ordem      VARCHAR2(20)    NOT NULL, -- Ex: COMPRA, VENDA
-    st_ordem      VARCHAR2(20)    NOT NULL  -- Ex: ABERTA, EXECUTADA, CANCELADA
+    nm_ativo      VARCHAR2(20)    NOT NULL,
+    nr_quantidade NUMBER(18,8)    NOT NULL,
+    vl_preco      NUMBER(18,2)    NOT NULL, -- ADICIONE ESTA LINHA PARA CORRIGIR O ERRO
+    tp_ordem      VARCHAR2(20)    NOT NULL,
+    st_ordem      VARCHAR2(20)    NOT NULL
 );
 
 
 -- Constraints em Separado
 -- Primary Key
-ALTER TABLE T_ORDEM 
+ALTER TABLE T_ORDEM
 ADD CONSTRAINT PK_ORDEM PRIMARY KEY (cd_ordem);
 
 -- Foreign Key ligando à Carteira
-ALTER TABLE T_ORDEM 
-ADD CONSTRAINT FK_ORDEM_CARTEIRA 
+ALTER TABLE T_ORDEM
+ADD CONSTRAINT FK_ORDEM_CARTEIRA
 FOREIGN KEY (cd_carteira) REFERENCES T_CARTEIRA (cd_carteira);
 
 -- Comentários (Dicionário de Dados)
@@ -124,5 +126,6 @@ COMMENT ON COLUMN T_ORDEM.nm_ativo IS 'Nome ou Ticker do ativo (Ex: BTC).';
 COMMENT ON COLUMN T_ORDEM.nr_quantidade IS 'Quantidade de ativos da ordem.';
 COMMENT ON COLUMN T_ORDEM.tp_ordem IS 'Tipo da operação: COMPRA ou VENDA.';
 COMMENT ON COLUMN T_ORDEM.st_ordem IS 'Status atual da ordem.';
+COMMENT ON COLUMN T_ORDEM.vl_preco IS 'Preço unitário do ativo no momento da ordem.';
 
 
