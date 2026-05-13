@@ -4,7 +4,6 @@ import br.com.criptaliza.exception.EntidadeNaoEncontradaException;
 import br.com.criptaliza.model.entities.Carteira;
 import br.com.criptaliza.model.entities.Cliente;
 import br.com.criptaliza.model.entities.Investidor;
-import oracle.jdbc.proxy.annotation.Pre;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
