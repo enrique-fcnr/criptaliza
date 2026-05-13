@@ -4,7 +4,6 @@ import br.com.criptaliza.exception.EntidadeNaoEncontradaException;
 import br.com.criptaliza.model.entities.Carteira;
 import br.com.criptaliza.model.entities.Cliente;
 import br.com.criptaliza.model.entities.Investidor;
-import oracle.jdbc.proxy.annotation.Pre;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -91,9 +90,10 @@ public class CarteiraDao {
             stm.setLong(1, id);
             int linhasAlteradas = stm.executeUpdate();
 
-            if (linhasAlteradas == 0){
-                throw new EntidadeNaoEncontradaException("Não foi possível deletar a carteira ID: " + id);
+            if (linhasAlteradas == 0) {
+                throw new EntidadeNaoEncontradaException("Carteira ID " + id + " não encontrado para exclusão.");
             }
+            System.out.println("Carteira ID " + id + " removida com sucesso!");
 
         }
     }
