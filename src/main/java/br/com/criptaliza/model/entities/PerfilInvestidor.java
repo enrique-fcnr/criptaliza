@@ -35,6 +35,15 @@ public class PerfilInvestidor {
         this.prevencoes = prevencoes;
     }
 
+    public PerfilInvestidor(long idInvestidor, String objetivo, String risco, String horizonte, String experiencia) {
+        this.idInvestidor = idInvestidor;
+        this.objetivo = objetivo;
+        this.toleranciaRisco = risco;
+        this.horizonte = horizonte;
+        this.experiencia = experiencia;
+    }
+
+
     //Getters and Setters//
     public Long getId() {
         return id;
@@ -89,4 +98,6 @@ public class PerfilInvestidor {
     public String avaliarPerfil(){
         return null;
     }
+
+
 }

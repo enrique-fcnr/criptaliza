@@ -75,7 +75,7 @@ public class InvestidorDao {
         }
     }
 
-    // 6. DELETAR:
+
     public void deletar(long id) throws SQLException, EntidadeNaoEncontradaException {
         String sql = "DELETE FROM t_investidor WHERE cd_investidor = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
@@ -95,4 +95,5 @@ public class InvestidorDao {
         int pontuacao = result.getInt("nr_pontuacao");
         return new Investidor(id, clienteID, persona, pontuacao);
     }
+
 }

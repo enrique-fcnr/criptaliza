@@ -29,12 +29,15 @@ public class PerfilInvestidorDao {
             stm.setString(3, perfil.getToleranciaRisco());
             stm.setString(4, perfil.getHorizonte());
             stm.setString(5, perfil.getExperiencia());
-            stm.setString(6, perfil.getPreferencias());
-            stm.setString(7, perfil.getPrevencoes());
+
+            // Garante que esses campos não fiquem nulos se não foram preenchidos
+            stm.setString(6, perfil.getPreferencias() != null ? perfil.getPreferencias() : "");
+            stm.setString(7, perfil.getPrevencoes() != null ? perfil.getPrevencoes() : "");
+
 
             int linhasAfetadas = stm.executeUpdate();
             if (linhasAfetadas > 0) {
-                System.out.println("Perfil de investidor cadastrado com sucesso!");
+                System.out.println("Perfil investidor cadastrado com sucesso!");
             }
         }
     }

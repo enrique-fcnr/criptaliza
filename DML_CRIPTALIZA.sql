@@ -3,22 +3,60 @@
 -----------------------------------------
 
 -- ============================================================
+-- 0. LIMPEZA DOS DADOS (DELETE)
+-- ============================================================
+-- Deletamos na ordem inversa das dependências para não dar erro de FK
+DELETE FROM T_INVESTIDOR_TRADE;
+DELETE FROM T_TRADE;
+DELETE FROM T_ORDEM;
+DELETE FROM T_CARTEIRA;
+DELETE FROM T_PERFIL_INVESTIDOR;
+DELETE FROM T_INVESTIDOR;
+DELETE FROM T_CLIENTE;
+
+-- Opcional: Reiniciar as sequences (se desejar que os IDs comecem do 1 novamente)
+-- DROP SEQUENCE seq_cliente; CREATE SEQUENCE seq_cliente... (e assim por diante)
+
+COMMIT;
+
+-- ============================================================
 -- 1. POPULANDO T_CLIENTE
 -- ============================================================
+-- 1. Cliente: Beatriz Santos
 INSERT INTO T_CLIENTE (cd_cliente, nm_cliente, email, telefone, idioma)
-VALUES (seq_cliente.NEXTVAL, 'João Silva', 'joao.silva@email.com', '11988887777', 'PT-BR');
+VALUES (seq_cliente.NEXTVAL, 'Beatriz Santos', 'beatriz.santos@email.com', '11912345678', 'PT-BR');
 
+-- 2. Cliente: Ricardo Montgomery (Investidor estrangeiro)
 INSERT INTO T_CLIENTE (cd_cliente, nm_cliente, email, telefone, idioma)
-VALUES (seq_cliente.NEXTVAL, 'Maria Oliveira', 'maria.invest@email.com', '21977776666', 'PT-BR');
+VALUES (seq_cliente.NEXTVAL, 'Ricardo Montgomery', 'rick.mont@global.com', '14155550199', 'EN-US');
+
+-- 3. Cliente: Helena Ferreira
+INSERT INTO T_CLIENTE (cd_cliente, nm_cliente, email, telefone, idioma)
+VALUES (seq_cliente.NEXTVAL, 'Helena Ferreira', 'helena.fer@uol.com.br', '31988774433', 'PT-BR');
+
+-- 4. Cliente: Carlos Eduardo (Dudu)
+INSERT INTO T_CLIENTE (cd_cliente, nm_cliente, email, telefone, idioma)
+VALUES (seq_cliente.NEXTVAL, 'Carlos Eduardo', 'cadu.invest@outlook.com', '41999887766', 'PT-BR');
+
+-- 5. Cliente: Sofia Martinez
+INSERT INTO T_CLIENTE (cd_cliente, nm_cliente, email, telefone, idioma)
+VALUES (seq_cliente.NEXTVAL, 'Sofia Martinez', 'sofia.mtz@gmail.com', '51955443322', 'ES-ES');
+
 
 -- ============================================================
 -- 2. POPULANDO T_INVESTIDOR
 -- ============================================================
+-- 1. Perfil Conservador (Alta aversão ao risco / Baixa tolerância)
 INSERT INTO T_INVESTIDOR (cd_investidor, cd_cliente, nm_persona, nr_pontuacao)
-VALUES (seq_investidor.NEXTVAL, 1, 'Holder Convicto', 85);
+VALUES (seq_investidor.NEXTVAL, 1, 'Conservador', 90);
 
+-- 2. Perfil Moderado (Equilíbrio entre segurança e lucro)
 INSERT INTO T_INVESTIDOR (cd_investidor, cd_cliente, nm_persona, nr_pontuacao)
-VALUES (seq_investidor.NEXTVAL, 2, 'Day Trader Cripto', 40);
+VALUES (seq_investidor.NEXTVAL, 2, 'Moderado', 60);
+
+-- 3. Perfil Arrojado (Alta tolerância ao risco / Foco em rentabilidade)
+INSERT INTO T_INVESTIDOR (cd_investidor, cd_cliente, nm_persona, nr_pontuacao)
+VALUES (seq_investidor.NEXTVAL, 3, 'Arrojado', 35);
 
 -- ============================================================
 -- 3. POPULANDO T_PERFIL_INVESTIDOR (Relação 1:1)
