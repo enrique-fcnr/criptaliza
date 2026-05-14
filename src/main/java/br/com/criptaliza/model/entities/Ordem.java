@@ -19,7 +19,8 @@ public class Ordem {
     private List<Trade> trades = new ArrayList<>();
 
     // Construtor Padrão (Importante para o DAO/Frameworks)
-    public Ordem() {}
+    public Ordem() {
+    }
 
     // Construtor Customizado (Para usar na View)
     public Ordem(Carteira carteira, String ativo, BigDecimal quantidade, BigDecimal preco, TipoOrdem tipo) {
@@ -108,7 +109,7 @@ public class Ordem {
     // Exemplo de toString para facilitar suas Views de listagem
     @Override
     public String toString() {
-        return "Ordem [ID=" + id + ", Ativo=" + ativo + ", Qtd=" + quantidade +
-                ", Tipo=" + tipo + ", Status=" + status + "]";
+        return String.format("Carteira ID #%-4d | Ordem #%-4d | Ativo: %-6s | Qtd: %-10s | Preço: %-10s | Tipo: %-7s | Status: %s",
+                carteira.getId(),id, ativo, quantidade, preco, tipo, status);
     }
 }

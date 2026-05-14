@@ -1,6 +1,7 @@
 package br.com.criptaliza.view;
 
 import br.com.criptaliza.dao.*;
+import br.com.criptaliza.exception.EntidadeNaoEncontradaException;
 import br.com.criptaliza.factory.ConnectionFactory;
 import br.com.criptaliza.model.entities.*;
 import br.com.criptaliza.model.enums.*;
@@ -369,68 +370,160 @@ public class Main {
         }
     }
     // --- MÓDULO 5: ORDENS ---
+    // --- MÓDULO 5: ORDENS (VERSÃO FINAL ATUALIZADA) ---
     private static void menuOrdens(Connection conn) throws SQLException {
         OrdemDao dao = new OrdemDao(conn);
         int op = -1;
         while (op != 0) {
-            System.out.println("\n[MENU ORDENS] 1.Nova Ordem 2.Listar 3.Excluir 0.Voltar");
+            System.out.println("\n[MENU ORDENS]");
+            System.out.println("1. Nova Ordem (Compra/Venda)");
+            System.out.println("2. Ver Histórico Completo");
+            System.out.println("3. VER MINHA CARTEIRA (Soma de Executados)");
+            System.out.println("4. EXECUTAR Ordem (Dar Baixa)"); // <-- NOVO: Essencial para o saldo
+            System.out.println("5. Buscar Ordem por ID");         // <-- NOVO: Para conferência
+            System.out.println("6. Cancelar Ordem");
+            System.out.println("0. Voltar");
+            System.out.print("Escolha: ");
             op = lerInteiro();
+
             try {
-                if (op == 1) {
-                    System.out.print("ID Carteira: "); long idC = lerLongo();
-                    System.out.print("Ativo: "); String at = leitor.nextLine();
-                    System.out.print("Preço: "); BigDecimal pr = new BigDecimal(leitor.nextLine());
-                    Carteira cart = new Carteira(); cart.setId(idC);
-                    dao.cadastrar(new Ordem(cart, at, BigDecimal.ONE, pr, TipoOrdem.COMPRA));
-                } else if (op == 2) {
-                    dao.listar().forEach(System.out::println);
-                } else if (op == 3) {
-                    System.out.print("ID Ordem para excluir: "); dao.remover(lerLongo());
+                switch (op) {
+                    case 1:
+                        System.out.print("ID Carteira: "); long idC = lerLongo();
+                        System.out.print("Ativo (ex: PETR4): "); String at = leitor.nextLine();
+                        System.out.print("Qtd: "); BigDecimal qtd = new BigDecimal(leitor.nextLine().replace(",", "."));
+                        System.out.print("Preço: "); BigDecimal pr = new BigDecimal(leitor.nextLine().replace(",", "."));
+                        System.out.print("Tipo (1-COMPRA, 2-VENDA): ");
+                        TipoOrdem tipo = (lerInteiro() == 2) ? TipoOrdem.VENDA : TipoOrdem.COMPRA;
+
+                        Carteira cart = new Carteira(); cart.setId(idC);
+                        dao.cadastrar(new Ordem(cart, at, qtd, pr, tipo));
+                        break;
+                    case 2:
+                        System.out.println("\n--- Histórico de Todas as Ordens ---");
+                        dao.listar().forEach(System.out::println);
+                        break;
+                    case 3:
+                        System.out.print("Digite o ID da Carteira para ver a custódia: ");
+                        dao.exibirPosicaoConsolidada(lerLongo());
+                        break;
+                    case 4:
+                        System.out.print("ID da Ordem para confirmar EXECUÇÃO: ");
+                        dao.executarOrdem(lerLongo());
+                        break;
+                    case 5:
+                        System.out.print("ID da Ordem para busca detalhada: ");
+                        Ordem busca = dao.buscarPorId(lerLongo());
+                        System.out.println(busca);
+                        break;
+                    case 6:
+                        System.out.print("ID da Ordem para CANCELAR: ");
+                        dao.cancelar(lerLongo());
+                        break;
                 }
-            } catch (Exception e) { System.out.println("Erro: " + e.getMessage()); }
+            } catch (Exception e) {
+                System.out.println("Erro: " + e.getMessage());
+            }
         }
     }
 
     // --- MÓDULO 6: TRADES ---
     private static void menuTrades(Connection conn) throws SQLException {
-        TradeDao dao = new TradeDao(conn);
+        TradeDao tradeDao = new TradeDao(conn); // Nome aqui é tradeDao
+        OrdemDao ordemDao = new OrdemDao(conn);
+
         int op = -1;
         while (op != 0) {
-            System.out.println("\n[MENU TRADES] 1.Registrar Execução 2.Listar 0.Voltar");
+            System.out.println("\n========= MÓDULO DE TRADES ===========");
+            System.out.println("1. Registrar Execução (Gera Trade)");
+            System.out.println("2. Listar Histórico de Trades");
+            System.out.println("0. Voltar");
+            System.out.print("Escolha: ");
             op = lerInteiro();
+
             try {
                 if (op == 1) {
-                    System.out.print("ID Ordem: "); long idO = lerLongo();
-                    System.out.print("Preço Executado: "); BigDecimal px = new BigDecimal(leitor.nextLine());
-                    Ordem ord = new Ordem(); ord.setId(idO);
-                    dao.cadastrar(new Trade(ord, px, BigDecimal.ONE, LocalDateTime.now()));
+                    System.out.println("\n--- Registro de Execução ---");
+                    System.out.print("Digite o ID da Ordem a ser executada: ");
+                    long idOrdem = lerLongo();
+
+                    // 1. Buscamos a ordem no banco
+                    Ordem ordem = ordemDao.buscarPorId(idOrdem);
+
+                    System.out.print("Preço Real de Execução (ex: 25.50): ");
+                    String precoStr = leitor.nextLine().replace(",", ".");
+                    BigDecimal precoExec = new BigDecimal(precoStr);
+
+                    // 2. Criamos o objeto Trade usando a quantidade da Ordem encontrada
+                    Trade novoTrade = new Trade(ordem, precoExec, ordem.getQuantidade(), LocalDateTime.now());
+
+                    // 3. Salvamos o Trade (Usando a variável correta: tradeDao)
+                    tradeDao.cadastrar(novoTrade);
+
+                    // 4. Atualizamos o status da ordem
+                    ordemDao.executarOrdem(idOrdem);
+
+                    System.out.println("Sucesso! Trade salvo e saldo liberado.");
+
                 } else if (op == 2) {
-                    dao.listar().forEach(t -> System.out.println("Trade ID: " + t.getId() + " | Preço: " + t.getPrecoExec()));
+                    System.out.println("\n--- HISTÓRICO DE TRADES ---");
+                    // CORREÇÃO AQUI: Mudamos de 'dao.listar()' para 'tradeDao.listar()'
+                    tradeDao.listar().forEach(t -> {
+                        System.out.println("ID Trade: " + t.getId() +
+                                " | ID Ordem: " + t.getOrdem().getId() +
+                                " | Preço Exec: R$ " + t.getPrecoExec() +
+                                " | Qtd: " + t.getQuantidade());
+                    });
                 }
-            } catch (Exception e) { System.out.println("Erro: " + e.getMessage()); }
+            } catch (Exception e) {
+                System.out.println("Erro: " + e.getMessage());
+            }
         }
     }
-
     // --- MÓDULO 7: VÍNCULO INV/TRADE ---
+    /*
+    Este módulo foi incluído para permitir escalabilidade,
+    suportando cenários onde múltiplos investidores dividem a execução
+    de um mesmo trade.
+     */
     private static void menuVinculo(Connection conn) throws SQLException {
         InvestidorTradeDao dao = new InvestidorTradeDao(conn);
         int op = -1;
         while (op != 0) {
-            System.out.println("\n[MENU VÍNCULOS] 1.Vincular Investidor ao Trade 2.Listar 0.Voltar");
+            System.out.println("\n========= MÓDULO DE VÍNCULOS =========");
+            System.out.println("1. Vincular Investidor a um Trade");
+            System.out.println("2. Listar todos os Vínculos");
+            System.out.println("0. Voltar");
+            System.out.print("Escolha: ");
             op = lerInteiro();
+
             try {
                 if (op == 1) {
-                    System.out.print("ID Investidor: "); long idI = lerLongo();
-                    System.out.print("ID Trade: "); long idT = lerLongo();
+                    System.out.print("ID do Investidor: "); long idI = lerLongo();
+                    System.out.print("ID do Trade (Execução): "); long idT = lerLongo();
+
+                    // Criando objetos simples apenas para carregar os IDs para o DAO
                     Investidor inv = new Investidor(); inv.setId(idI);
                     Trade tr = new Trade(); tr.setId(idT);
+
                     dao.cadastrar(new InvestidorTrade(inv, tr));
+                    System.out.println("Vínculo realizado com sucesso!");
+
                 } else if (op == 2) {
-                    dao.listar().forEach(v -> System.out.println("Vínculo ID: " + v.getId() + " | Inv: " + v.getInvestidor().getId() + " | Trade: " + v.getTrade().getId()));
+                    System.out.println("\n--- RELAÇÃO INVESTIDOR X TRADE ---");
+                    dao.listar().forEach(v -> {
+                        System.out.println("Vínculo ID: " + v.getId() +
+                                " | Investidor ID: " + v.getInvestidor().getId() +
+                                " | Trade ID: " + v.getTrade().getId());
+                    });
                 }
-            } catch (Exception e) { System.out.println("Erro: " + e.getMessage()); }
+            } catch (Exception e) {
+                System.out.println("Erro ao vincular: " + e.getMessage());
+            }
         }
     }
+
+
 
     // --- AUXILIARES ---
     private static int lerInteiro() {
@@ -443,4 +536,5 @@ public class Main {
             long l = leitor.nextLong(); leitor.nextLine(); return l;
         } catch (Exception e) { leitor.nextLine(); return -1; }
     }
+
 }

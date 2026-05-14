@@ -71,8 +71,9 @@ public class Trade {
     }
 
     //Methods//
-    public void registrar(){}
-    public BigDecimal calcularLucro(BigDecimal precoCompra){
-        return null;
+    public BigDecimal calcularLucro(BigDecimal precoCompra) {
+        if (precoCompra == null || precoExec == null) return BigDecimal.ZERO;
+        // Lucro = (Preço de Venda - Preço de Compra) * Quantidade
+        return precoExec.subtract(precoCompra).multiply(quantidade);
     }
 }
