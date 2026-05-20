@@ -110,7 +110,7 @@ VALUES (seq_carteira.NEXTVAL, 2, 'Especulação Altcoins', SYSDATE);
 -- 5. POPULANDO T_ORDEM
 -- ============================================================
 INSERT INTO T_ORDEM (cd_ordem, cd_carteira, nm_ativo, nr_quantidade, vl_preco, tp_ordem, st_ordem)
-VALUES (seq_ordem.NEXTVAL, 1, 'BTC', 0.05, 350000.00, 'COMPRA', 'EXECUTADA');
+VALUES (seq_ordem.NEXTVAL, 1, 'BTC', 1, 250.90, 'COMPRA', 'EXECUTADA');
 
 INSERT INTO T_ORDEM (cd_ordem, cd_carteira, nm_ativo, nr_quantidade, vl_preco, tp_ordem, st_ordem)
 VALUES (seq_ordem.NEXTVAL, 2, 'ETH', 1.5, 12000.00, 'COMPRA', 'EXECUTADA');
