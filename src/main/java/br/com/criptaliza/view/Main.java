@@ -373,19 +373,41 @@ public class Main {
         OrdemDao dao = new OrdemDao(conn);
         int op = -1;
         while (op != 0) {
-            System.out.println("\n[MENU ORDENS] 1.Nova Ordem 2.Listar 3.Excluir 0.Voltar");
+            System.out.println("\n[MENU ORDENS] 1.Incluir 2.Listar 3.Excluir 4.Pesquisar 5.Atualizar 0.Voltar");
             op = lerInteiro();
             try {
                 if (op == 1) {
                     System.out.print("ID Carteira: "); long idC = lerLongo();
-                    System.out.print("Ativo: "); String at = leitor.nextLine();
+                    System.out.print("Ativo (ex: BTC): "); String at = leitor.nextLine();
+                    System.out.print("Quantidade: "); BigDecimal qtd = new BigDecimal(leitor.nextLine());
                     System.out.print("Preço: "); BigDecimal pr = new BigDecimal(leitor.nextLine());
+                    System.out.println("Tipo: 1.COMPRA 2.MARKET 3.LIMIT 4.STOP");
+                    int tp = lerInteiro();
+                    TipoOrdem[] tipos = {TipoOrdem.COMPRA, TipoOrdem.MARKET, TipoOrdem.LIMIT, TipoOrdem.STOP};
+                    TipoOrdem tipo = (tp >= 1 && tp <= 4) ? tipos[tp - 1] : TipoOrdem.COMPRA;
                     Carteira cart = new Carteira(); cart.setId(idC);
-                    dao.cadastrar(new Ordem(cart, at, BigDecimal.ONE, pr, TipoOrdem.COMPRA));
+                    dao.cadastrar(new Ordem(cart, at, qtd, pr, tipo));
                 } else if (op == 2) {
+                    System.out.println("\n--- LISTA DE ORDENS ---");
                     dao.listar().forEach(System.out::println);
                 } else if (op == 3) {
                     System.out.print("ID Ordem para excluir: "); dao.remover(lerLongo());
+                } else if (op == 4) {
+                    System.out.print("ID Ordem para busca: ");
+                    Ordem o = dao.pesquisar(lerLongo());
+                    System.out.println(o);
+                } else if (op == 5) {
+                    System.out.print("ID Ordem para atualizar: ");
+                    long idAlt = lerLongo();
+                    Ordem atual = dao.pesquisar(idAlt);
+                    System.out.println("Atual: " + atual);
+                    System.out.print("Nova Quantidade: "); atual.setQuantidade(new BigDecimal(leitor.nextLine()));
+                    System.out.print("Novo Preço: "); atual.setPreco(new BigDecimal(leitor.nextLine()));
+                    System.out.println("Novo Status: 1.CRIADA 2.ENVIADA 3.EXECUTADA 4.CANCELADA");
+                    int st = lerInteiro();
+                    StatusOrdem[] statuses = {StatusOrdem.CRIADA, StatusOrdem.ENVIADA, StatusOrdem.EXECUTADA, StatusOrdem.CANCELADA};
+                    if (st >= 1 && st <= 4) atual.setStatus(statuses[st - 1]);
+                    dao.atualizar(atual);
                 }
             } catch (Exception e) { System.out.println("Erro: " + e.getMessage()); }
         }
@@ -396,16 +418,32 @@ public class Main {
         TradeDao dao = new TradeDao(conn);
         int op = -1;
         while (op != 0) {
-            System.out.println("\n[MENU TRADES] 1.Registrar Execução 2.Listar 0.Voltar");
+            System.out.println("\n[MENU TRADES] 1.Incluir 2.Listar 3.Excluir 4.Pesquisar 5.Atualizar 0.Voltar");
             op = lerInteiro();
             try {
                 if (op == 1) {
                     System.out.print("ID Ordem: "); long idO = lerLongo();
                     System.out.print("Preço Executado: "); BigDecimal px = new BigDecimal(leitor.nextLine());
+                    System.out.print("Quantidade: "); BigDecimal qtd = new BigDecimal(leitor.nextLine());
                     Ordem ord = new Ordem(); ord.setId(idO);
-                    dao.cadastrar(new Trade(ord, px, BigDecimal.ONE, LocalDateTime.now()));
+                    dao.cadastrar(new Trade(ord, px, qtd, LocalDateTime.now()));
                 } else if (op == 2) {
-                    dao.listar().forEach(t -> System.out.println("Trade ID: " + t.getId() + " | Preço: " + t.getPrecoExec()));
+                    System.out.println("\n--- LISTA DE TRADES ---");
+                    dao.listar().forEach(t -> System.out.println("Trade ID: " + t.getId() + " | Ordem: " + t.getOrdem().getId() + " | Preço: " + t.getPrecoExec() + " | Qtd: " + t.getQuantidade()));
+                } else if (op == 3) {
+                    System.out.print("ID Trade para excluir: "); dao.remover(lerLongo());
+                } else if (op == 4) {
+                    System.out.print("ID Trade para busca: ");
+                    Trade t = dao.pesquisar(lerLongo());
+                    System.out.println("Trade ID: " + t.getId() + " | Ordem: " + t.getOrdem().getId() + " | Preço: " + t.getPrecoExec() + " | Qtd: " + t.getQuantidade() + " | Data: " + t.getDataExec());
+                } else if (op == 5) {
+                    System.out.print("ID Trade para atualizar: ");
+                    long idAlt = lerLongo();
+                    Trade atual = dao.pesquisar(idAlt);
+                    System.out.println("Atual -> Preço: " + atual.getPrecoExec() + " | Qtd: " + atual.getQuantidade());
+                    System.out.print("Novo Preço Executado: "); atual.setPrecoExec(new BigDecimal(leitor.nextLine()));
+                    System.out.print("Nova Quantidade: "); atual.setQuantidade(new BigDecimal(leitor.nextLine()));
+                    dao.atualizar(atual);
                 }
             } catch (Exception e) { System.out.println("Erro: " + e.getMessage()); }
         }
@@ -416,7 +454,7 @@ public class Main {
         InvestidorTradeDao dao = new InvestidorTradeDao(conn);
         int op = -1;
         while (op != 0) {
-            System.out.println("\n[MENU VÍNCULOS] 1.Vincular Investidor ao Trade 2.Listar 0.Voltar");
+            System.out.println("\n[MENU VÍNCULOS] 1.Incluir 2.Listar 3.Excluir 4.Pesquisar 5.Atualizar 0.Voltar");
             op = lerInteiro();
             try {
                 if (op == 1) {
@@ -426,7 +464,24 @@ public class Main {
                     Trade tr = new Trade(); tr.setId(idT);
                     dao.cadastrar(new InvestidorTrade(inv, tr));
                 } else if (op == 2) {
+                    System.out.println("\n--- LISTA DE VÍNCULOS ---");
                     dao.listar().forEach(v -> System.out.println("Vínculo ID: " + v.getId() + " | Inv: " + v.getInvestidor().getId() + " | Trade: " + v.getTrade().getId()));
+                } else if (op == 3) {
+                    System.out.print("ID Vínculo para excluir: "); dao.remover(lerLongo());
+                } else if (op == 4) {
+                    System.out.print("ID Vínculo para busca: ");
+                    InvestidorTrade v = dao.pesquisar(lerLongo());
+                    System.out.println("Vínculo ID: " + v.getId() + " | Inv: " + v.getInvestidor().getId() + " | Trade: " + v.getTrade().getId());
+                } else if (op == 5) {
+                    System.out.print("ID Vínculo para atualizar: ");
+                    long idAlt = lerLongo();
+                    InvestidorTrade atual = dao.pesquisar(idAlt);
+                    System.out.println("Atual -> Inv: " + atual.getInvestidor().getId() + " | Trade: " + atual.getTrade().getId());
+                    System.out.print("Novo ID Investidor: "); long idI = lerLongo();
+                    System.out.print("Novo ID Trade: "); long idT = lerLongo();
+                    Investidor inv = new Investidor(); inv.setId(idI);
+                    Trade tr = new Trade(); tr.setId(idT);
+                    dao.atualizar(new InvestidorTrade(idAlt, inv, tr));
                 }
             } catch (Exception e) { System.out.println("Erro: " + e.getMessage()); }
         }

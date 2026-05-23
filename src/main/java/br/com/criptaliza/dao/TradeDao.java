@@ -3,7 +3,6 @@ package br.com.criptaliza.dao;
 import br.com.criptaliza.exception.EntidadeNaoEncontradaException;
 import br.com.criptaliza.model.entities.Ordem;
 import br.com.criptaliza.model.entities.Trade;
-
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -22,10 +21,9 @@ public class TradeDao {
         this.connection = connection;
     }
 
-    // 2. CADASTRAR:
     public void cadastrar(Trade trade) throws SQLException {
-        String sql = "INSERT INTO t_trade (cd_trade, cd_ordem, vl_preco_exec, nr_quantidade, dt_exec) " +
-                "VALUES (seq_trade.nextval, ?, ?, ?, ?)";
+        // SQL para inserir o Trade na tabela T_TRADE
+        String sql = "INSERT INTO t_trade (cd_trade, cd_ordem, vl_preco_exec, nr_quantidade, dt_exec) VALUES (seq_trade.nextval, ?, ?, ?, ?)";
 
         try (PreparedStatement stm = connection.prepareStatement(sql)) {
             stm.setLong(1, trade.getOrdem().getId());
@@ -33,86 +31,75 @@ public class TradeDao {
             stm.setBigDecimal(3, trade.getQuantidade());
             stm.setTimestamp(4, Timestamp.valueOf(trade.getDataExec()));
 
-            int linhasAfetadas = stm.executeUpdate();
-            if (linhasAfetadas > 0) {
-                System.out.println("Trade cadastrado com sucesso!");
-            }
+            stm.executeUpdate();
+            System.out.println("Trade registrado com sucesso!");
         }
     }
 
-    // 3. PESQUISAR:
     public Trade pesquisar(long id) throws SQLException, EntidadeNaoEncontradaException {
         String sql = "SELECT * FROM t_trade WHERE cd_trade = ?";
-
         try (PreparedStatement stm = connection.prepareStatement(sql)) {
             stm.setLong(1, id);
-            try (ResultSet result = stm.executeQuery()) {
-                if (!result.next()) {
-                    throw new EntidadeNaoEncontradaException("Trade não encontrado!");
-                }
-                return parseTrade(result);
+            try (ResultSet rs = stm.executeQuery()) {
+                if (!rs.next()) throw new EntidadeNaoEncontradaException("Trade não encontrado!");
+                return parseTrade(rs);
             }
         }
     }
 
-    // 4. LISTAR:
     public List<Trade> listar() throws SQLException {
         String sql = "SELECT * FROM t_trade";
-        List<Trade> listaTrades = new ArrayList<>();
+        List<Trade> lista = new ArrayList<>();
         try (PreparedStatement stm = connection.prepareStatement(sql);
-             ResultSet result = stm.executeQuery()) {
-            while (result.next()) {
-                listaTrades.add(parseTrade(result));
-            }
+             ResultSet rs = stm.executeQuery()) {
+            while (rs.next()) lista.add(parseTrade(rs));
         }
-        return listaTrades;
+        return lista;
     }
 
-    // 5. ATUALIZAR:
     public void atualizar(Trade trade) throws SQLException, EntidadeNaoEncontradaException {
-        String sql = "UPDATE t_trade SET vl_preco_exec = ?, nr_quantidade = ?, dt_exec = ? WHERE cd_trade = ?";
-
+        String sql = "UPDATE t_trade SET vl_preco_exec = ?, nr_quantidade = ? WHERE cd_trade = ?";
         try (PreparedStatement stm = connection.prepareStatement(sql)) {
             stm.setBigDecimal(1, trade.getPrecoExec());
             stm.setBigDecimal(2, trade.getQuantidade());
-            stm.setTimestamp(3, Timestamp.valueOf(trade.getDataExec()));
-            stm.setLong(4, trade.getId());
-
-            int linhasAlteradas = stm.executeUpdate();
-            if (linhasAlteradas == 0) {
-                throw new EntidadeNaoEncontradaException("Trade ID " + trade.getId() + " não encontrado para atualização.");
-            }
-            System.out.println("O trade " + trade.getId() + " foi atualizado com sucesso!");
+            stm.setLong(3, trade.getId());
+            int linhas = stm.executeUpdate();
+            if (linhas == 0) throw new EntidadeNaoEncontradaException("Trade ID " + trade.getId() + " não encontrado para atualização.");
+            System.out.println("Trade ID " + trade.getId() + " atualizado com sucesso!");
         }
     }
 
-    // 6. REMOVER:
     public void remover(long id) throws SQLException, EntidadeNaoEncontradaException {
         String sql = "DELETE FROM t_trade WHERE cd_trade = ?";
-
         try (PreparedStatement stm = connection.prepareStatement(sql)) {
             stm.setLong(1, id);
-
-            int linhasAlteradas = stm.executeUpdate();
-            if (linhasAlteradas == 0) {
-                throw new EntidadeNaoEncontradaException("Trade ID " + id + " não encontrado para exclusão.");
-            }
+            int linhas = stm.executeUpdate();
+            if (linhas == 0) throw new EntidadeNaoEncontradaException("Trade ID " + id + " não encontrado para exclusão.");
             System.out.println("Trade ID " + id + " removido com sucesso!");
         }
     }
 
-    private Trade parseTrade(ResultSet result) throws SQLException {
-        Long id = result.getLong("cd_trade");
-        BigDecimal precoExec = result.getBigDecimal("vl_preco_exec");
-        BigDecimal quantidade = result.getBigDecimal("nr_quantidade");
+    public Trade buscarPorOrdem(Long ordemId) throws SQLException {
+        String sql = "SELECT * FROM t_trade WHERE cd_ordem = ?";
+        try (PreparedStatement stm = connection.prepareStatement(sql)) {
+            stm.setLong(1, ordemId);
+            try (ResultSet rs = stm.executeQuery()) {
+                if (rs.next()) return parseTrade(rs);
+            }
+        }
+        return null;
+    }
 
-        Timestamp ts = result.getTimestamp("dt_exec");
-        LocalDateTime dataExec = (ts != null) ? ts.toLocalDateTime() : null;
-
-        long idOrdem = result.getLong("cd_ordem");
-        Ordem ordemDummy = new Ordem();
-        ordemDummy.setId(idOrdem);
-
-        return new Trade(id, ordemDummy, precoExec, quantidade, dataExec);
+    private Trade parseTrade(ResultSet rs) throws SQLException {
+        Long id = rs.getLong("cd_trade");
+        long idOrdem = rs.getLong("cd_ordem");
+        BigDecimal precoExec = rs.getBigDecimal("vl_preco_exec");
+        BigDecimal quantidade = rs.getBigDecimal("nr_quantidade");
+        LocalDateTime dataExec = rs.getTimestamp("dt_exec").toLocalDateTime();
+        Ordem ord = new Ordem();
+        ord.setId(idOrdem);
+        Trade t = new Trade(ord, precoExec, quantidade, dataExec);
+        t.setId(id);
+        return t;
     }
 }
