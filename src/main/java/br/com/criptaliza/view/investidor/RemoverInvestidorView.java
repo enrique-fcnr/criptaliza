@@ -23,7 +23,6 @@ public class RemoverInvestidorView {
 
                 System.out.println("Tentando remover investidor ID: " + idParaRemover);
 
-                // 2. Chamamos o método de remover
                 investidorDao.deletar(idParaRemover);
 
                 System.out.println("Sucesso: Investidor removido com sucesso!");

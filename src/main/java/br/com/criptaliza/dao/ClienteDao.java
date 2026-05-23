@@ -19,7 +19,7 @@ public class ClienteDao {
         this.connection = connection;
     }
 
-    // 2. CADASTRAR: Usando try-with-resources
+    // 2. CADASTRAR:
     public void cadastrar(Cliente cliente) throws SQLException {
         String sql = "INSERT INTO t_cliente (cd_cliente, nm_cliente, email, telefone, idioma) VALUES (seq_cliente.nextval, ?, ?, ?, ?)";
 
@@ -28,11 +28,14 @@ public class ClienteDao {
             stm.setString(2, cliente.getEmail());
             stm.setString(3, cliente.getTelefone());
             stm.setString(4, cliente.getIdioma());
-            stm.executeUpdate();
+            int linhasAfetadas = stm.executeUpdate();
+            if (linhasAfetadas > 0) {
+                System.out.println("Cliente cadastrado com sucesso!");
+            }
         }
     }
 
-    // 3. PESQUISAR: Usando try-with-resources duplo (stmt e rs)
+    // 3. PESQUISAR:
     public Cliente pesquisar(long codigo) throws SQLException, EntidadeNaoEncontradaException {
         String sql = "SELECT * FROM t_cliente WHERE cd_cliente = ?";
 
@@ -62,7 +65,7 @@ public class ClienteDao {
     }
 
     // 5. ATUALIZAR
-    public void atualizar(Cliente cliente) throws SQLException {
+    public void atualizar(Cliente cliente) throws SQLException, EntidadeNaoEncontradaException {
         String sql = "UPDATE t_cliente SET nm_cliente = ?, email = ?, telefone = ?, idioma = ? WHERE cd_cliente = ?";
 
         try (PreparedStatement stm = connection.prepareStatement(sql)) {
@@ -71,8 +74,14 @@ public class ClienteDao {
             stm.setString(3, cliente.getTelefone());
             stm.setString(4, cliente.getIdioma());
             stm.setLong(5, cliente.getId());
-            stm.executeUpdate();
+
+            int linhas = stm.executeUpdate();
+            if (linhas == 0) {
+                throw new EntidadeNaoEncontradaException("Não foi possível atualizar o cliente ID: " + cliente.getId());
+            }
+            System.out.println("O cliente " + cliente.getId() + " foi atualizado.");
         }
+
     }
 
     // 6. REMOVER
@@ -83,7 +92,7 @@ public class ClienteDao {
             stm.setLong(1, codigo);
             int linha = stm.executeUpdate();
             if (linha == 0) {
-                throw new EntidadeNaoEncontradaException("Cliente não encontrado para ser removido");
+                throw new EntidadeNaoEncontradaException("Cliente não encontrado para ser removido.");
             }
         }
     }

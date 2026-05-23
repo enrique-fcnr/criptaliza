@@ -43,6 +43,10 @@ public class Investidor{
         this.tradesRegistrados = new ArrayList<>();
     }
 
+    public Investidor() {
+
+    }
+
     //Getters and Setters//
     public long getId() {
         return id;
@@ -110,5 +114,21 @@ public class Investidor{
         // Exemplo: se o risco é 100, rende 20%. Se é 10, rende 2%.
         double taxa = this.pontuacaoRisco / 500.0;
         return valorSimulado * (1 + taxa);
+    }
+    @Override
+    public String toString() {
+        return "Perfil[Objetivo=" + perfil.getObjetivo() + ", Risco=" + perfil.getToleranciaRisco() + "]";
+    }
+
+    public void definirPersonaPorPontuacao(int pontuacao) {
+        this.pontuacaoRisco = pontuacao;
+
+        if (pontuacao >= 80) {
+            this.persona = "Iniciante";
+        } else if (pontuacao >= 65) {
+            this.persona = "Moderado";
+        } else {
+            this.persona = "Confiante";
+        }
     }
 }

@@ -1,0 +1,55 @@
+erDiagram
+    T_CLIENTE ||--o{ T_INVESTIDOR : "possui"
+    T_INVESTIDOR ||--|| T_PERFIL_INVESTIDOR : "define"
+    T_INVESTIDOR ||--o{ T_CARTEIRA : "gerencia"
+    T_CARTEIRA ||--o{ T_ORDEM : "registra"
+    T_ORDEM ||--o{ T_TRADE : "gera"
+    T_INVESTIDOR ||--o{ T_INVESTIDOR_TRADE : "participa"
+    T_TRADE ||--o{ T_INVESTIDOR_TRADE : "vinculado"
+    T_CLIENTE {
+        long cd_cliente PK
+        string nm_cliente
+        string email
+        string telefone
+        string idioma
+    }
+    T_INVESTIDOR {
+        long cd_investidor PK
+        long cd_cliente FK
+        string nm_persona
+        int nr_pontuacao
+    }
+    T_PERFIL_INVESTIDOR {
+        long cd_investidor PK
+        string tx_objetivo
+        string tx_tolerancia_risco
+        string tx_horizonte
+        string tx_experiencia
+    }
+    T_CARTEIRA {
+        long cd_carteira PK
+        long cd_investidor FK
+        string nm_carteira
+        string dt_criacao
+    }
+    T_ORDEM {
+        long cd_ordem PK
+        long cd_carteira FK
+        string nm_ativo
+        double nr_quantidade
+        double vl_preco
+        string tp_ordem
+        string st_ordem
+    }
+    T_TRADE {
+        long cd_trade PK
+        long cd_ordem FK
+        double vl_preco_exec
+        double nr_quantidade
+        string dt_exec
+    }
+    T_INVESTIDOR_TRADE {
+        long cd_investidor_trade PK
+        long cd_investidor FK
+        long cd_trade FK
+    }

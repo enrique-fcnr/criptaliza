@@ -1,15 +1,13 @@
 package br.com.criptaliza.view.investidor;
 
-import br.com.criptaliza.dao.ClienteDao;
 import br.com.criptaliza.dao.InvestidorDao;
 import br.com.criptaliza.factory.ConnectionFactory;
-import br.com.criptaliza.model.entities.Cliente;
 import br.com.criptaliza.model.entities.Investidor;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public class CadastrarInvestidor {
+public class CadastrarInvestidorView {
     public static void main(String[] args) {
 
         // 1. Tentar estabelecer a conexão com o banco

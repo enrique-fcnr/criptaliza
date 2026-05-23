@@ -1,84 +1,161 @@
 package br.com.criptaliza.model.entities;
 
-import java.util.*;
+import java.math.BigDecimal;
+import java.math.RoundingMode; // Importante para operações financeiras
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+/**
+ * Entidade que representa a Carteira de investimentos do usuário.
+ */
 public class Carteira {
-    //Attributes//
-    private final UUID id;
-    private final Investidor investidor; //associação à classe investidor
+
+    // Identificadores e Associações
+    private Long id;
+    private Investidor investidor;
+    private LocalDateTime dataCriacao;
+
+    // Atributos de Negócio
     private String nome;
     private String faixaRisco;
-    private Float totalInvestido;
-    private Float valorAtual;
+    private BigDecimal totalInvestido;
+    private BigDecimal valorAtual;
 
-    private final Map<String, Float> ativos; // Coleção para armazenar a posição: Ex: <"BTC", 0.5>, <"ETH", 3.0>
+    // --- CORREÇÃO: Inicialização das Coleções que faltavam ---
+    private Map<String, BigDecimal> ativos = new HashMap<>();
+    private List<Ordem> ordens = new ArrayList<>();
+    // Certifique-se que a classe RecomendacaoCarteira existe no seu projeto
+    private List<RecomendacaoCarteira> recomendacoes = new ArrayList<>();
 
-    private final List<Ordem> ordens;
-    private final List<RecomendacaoCarteira> recomendacoes;
+    // --- CONSTRUTORES ---
 
-    //Constructors//
+    public Carteira() {
+    }
+
+    // Construtor para criação de nova carteira (Cadastro Inicial via Menu)
     public Carteira(Investidor investidor, String nome) {
-        this.id = UUID.randomUUID();
         this.investidor = investidor;
         this.nome = nome;
-
         this.faixaRisco = "N/A";
-        this.totalInvestido = 0.0f;
-        this.valorAtual = 0.0f;
-        this.ativos = new HashMap<>();
-        this.ordens = new ArrayList<>();
-        this.recomendacoes = new ArrayList<>();
+        this.totalInvestido = BigDecimal.ZERO;
+        this.valorAtual = BigDecimal.ZERO;
+        this.dataCriacao = LocalDateTime.now();
     }
 
-    //Getters and Setters//
-    public UUID getId() {
+    // Construtor Completo (Usado pelo DAO ao carregar do banco)
+    public Carteira(Investidor investidor, String nome, LocalDateTime dataCriacao, BigDecimal totalInvestido, BigDecimal valorAtual) {
+        this.investidor = investidor;
+        this.nome = nome;
+        this.dataCriacao = dataCriacao;
+        this.totalInvestido = totalInvestido;
+        this.valorAtual = valorAtual;
+        this.faixaRisco = "N/A";
+    }
+
+    // --- GETTERS E SETTERS ---
+
+    public Long getId() {
         return id;
     }
-    public Investidor getInvestidor() { // Getter para a associação
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Investidor getInvestidor() {
         return investidor;
     }
+
+    public void setInvestidor(Investidor investidor) {
+        this.investidor = investidor;
+    }
+
+    public LocalDateTime getDataCriacao() {
+        return dataCriacao;
+    }
+
+    public void setDataCriacao(LocalDateTime dataCriacao) {
+        this.dataCriacao = dataCriacao;
+    }
+
     public String getNome() {
         return nome;
     }
-    public void setNome(String nome) { // Mutável
+
+    public void setNome(String nome) {
         this.nome = nome;
     }
+
     public String getFaixaRisco() {
         return faixaRisco;
     }
-    public void setFaixaRisco(String faixaRisco) { // Mutável
+
+    public void setFaixaRisco(String faixaRisco) {
         this.faixaRisco = faixaRisco;
     }
-    public Float getTotalInvestido() {
+
+    public BigDecimal getTotalInvestido() {
         return totalInvestido;
     }
-    public Float getValorAtual() {
+
+    public void setTotalInvestido(BigDecimal totalInvestido) {
+        this.totalInvestido = totalInvestido;
+    }
+
+    public BigDecimal getValorAtual() {
         return valorAtual;
     }
+
+    public void setValorAtual(BigDecimal valorAtual) {
+        this.valorAtual = valorAtual;
+    }
+
+    // Getters e Setters das Coleções
+    public Map<String, BigDecimal> getAtivos() {
+        return ativos;
+    }
+
+    public void setAtivos(Map<String, BigDecimal> ativos) {
+        this.ativos = ativos;
+    }
+
     public List<Ordem> getOrdens() {
         return ordens;
     }
+
+    public void setOrdens(List<Ordem> ordens) {
+        this.ordens = ordens;
+    }
+
     public List<RecomendacaoCarteira> getRecomendacoes() {
         return recomendacoes;
     }
 
-    // Métodos para gestão dos Ativos
-    public Map<String, Float> getAtivos() {
-        return ativos;
+    public void setRecomendacoes(List<RecomendacaoCarteira> recomendacoes) {
+        this.recomendacoes = recomendacoes;
     }
 
-    //Methods//
-    public void adicionarAtivo(String ativo, Float quantidade){
-        // Lógica de adição de ativo na Map 'ativos'
-    }
-    public void removerAtivo(String ativo){
-        // Lógica de remoção de ativo da Map 'ativos'
-    }
-    public Float calcularRentabilidade(){
-        return null; // Placeholder
-    }
-    public void rebalancear(){
-        // Lógica de alocação inteligente
+    // --- MÉTODOS DE GESTÃO (Lógica de Negócio) ---
+
+    public void adicionarAtivo(String ticker, BigDecimal quantidade) {
+        if (this.ativos == null) this.ativos = new HashMap<>();
+        this.ativos.merge(ticker, quantidade, BigDecimal::add);
     }
 
+    public void removerAtivo(String ticker) {
+        this.ativos.remove(ticker);
+    }
+
+    public BigDecimal calcularRentabilidade() {
+        if (totalInvestido == null || totalInvestido.compareTo(BigDecimal.ZERO) == 0) {
+            return BigDecimal.ZERO;
+        }
+        // Cálculo: ((Atual - Investido) / Investido) * 100
+        return valorAtual.subtract(totalInvestido)
+                .divide(totalInvestido, 4, RoundingMode.HALF_UP)
+                .multiply(new BigDecimal("100"));
+    }
 }
