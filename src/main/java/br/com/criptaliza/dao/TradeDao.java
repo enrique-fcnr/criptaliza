@@ -2,6 +2,7 @@ package br.com.criptaliza.dao;
 
 import br.com.criptaliza.model.entities.Ordem;
 import br.com.criptaliza.model.entities.Trade;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -22,9 +23,9 @@ public class TradeDao {
 
         try (PreparedStatement stm = connection.prepareStatement(sql)) {
             stm.setLong(1, trade.getOrdem().getId());
-            stm.setFloat(2, trade.getPrecoExec());
-            stm.setFloat(3, trade.getQuantidade());
-            stm.setTimestamp(4, new Timestamp(trade.getDataExec().getTime()));
+            stm.setBigDecimal(2, trade.getPrecoExec());
+            stm.setBigDecimal(3, trade.getQuantidade());
+            stm.setTimestamp(4, Timestamp.valueOf(trade.getDataExec()));
 
             stm.executeUpdate();
             System.out.println("Trade registrado com sucesso!");
@@ -41,7 +42,7 @@ public class TradeDao {
                 if (rs.next()) {
                     // Aqui você retornaria o Trade montado. 
                     // Certifique-se de ter um construtor na classe Trade que aceite esses campos.
-                    return new Trade(null, rs.getFloat("vl_preco_exec"), rs.getFloat("nr_quantidade"), rs.getTimestamp("dt_exec"));
+                    return new Trade(null, rs.getBigDecimal("vl_preco_exec"), rs.getBigDecimal("nr_quantidade"), rs.getTimestamp("dt_exec").toLocalDateTime());
                 }
             }
         }

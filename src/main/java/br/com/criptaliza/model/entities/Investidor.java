@@ -117,6 +117,7 @@ public class Investidor{
     }
     @Override
     public String toString() {
+        if (perfil == null) return "Investidor[id=" + id + ", persona=" + persona + "]";
         return "Perfil[Objetivo=" + perfil.getObjetivo() + ", Risco=" + perfil.getToleranciaRisco() + "]";
     }
 
